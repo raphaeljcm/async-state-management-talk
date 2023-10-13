@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  html {
+    background-color: #071422;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3A536B;
+    border-radius: 1rem;
+  }
+}
+
+@layer utilities {
+  .cardTransition {
+    transition: border 150ms ease-in 0s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0s, box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0s;
+  }
+}
