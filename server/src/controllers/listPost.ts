@@ -9,7 +9,7 @@ export async function listPost(req: Request, res: Response) {
 
     if (!row) {
       res.status(404);
-      return res.send('Not found');
+      res.json({ message: 'Post not found' });
     }
 
     res.json(row);
