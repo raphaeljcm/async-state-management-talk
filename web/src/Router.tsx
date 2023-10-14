@@ -6,6 +6,8 @@ import { PublicLayout } from './layouts/PublicLayout';
 import { Home } from 'src/pages/Home';
 
 const Post = lazy(() => import('src/pages/Post'));
+const CreatePost = lazy(() => import('src/pages/CreatePost'));
+const EditPost = lazy(() => import('src/pages/EditPost'));
 
 export function Router() {
   return (
@@ -18,6 +20,22 @@ export function Router() {
             element={
               <Suspense fallback={<Loading />}>
                 <Post />
+              </Suspense>
+            }
+          />
+          <Route
+            path={APP_ROUTES.CREATE_POST}
+            element={
+              <Suspense fallback={<Loading />}>
+                <CreatePost />
+              </Suspense>
+            }
+          />
+          <Route
+            path={APP_ROUTES.EDIT_POST}
+            element={
+              <Suspense fallback={<Loading />}>
+                <EditPost />
               </Suspense>
             }
           />

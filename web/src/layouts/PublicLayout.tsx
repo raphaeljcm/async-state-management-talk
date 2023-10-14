@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import coverBg from '../assets/cover.png';
+import { StatusCard } from '@/StatusCard';
 
 export function PublicLayout() {
   return (
@@ -9,6 +10,7 @@ export function PublicLayout() {
       </header>
 
       <main className="px-[250px] relative -top-20">
+        <StatusCard />
         <Outlet />
       </main>
     </div>
