@@ -19,6 +19,9 @@ export default {
         'base-background': '#071422',
         'base-input': '#040F1A',
       },
+      boxShadow: {
+        customShadow: '0px 2px 28px 0px rgba(0, 0, 0, 0.20)',
+      },
     },
   },
   plugins: [],
