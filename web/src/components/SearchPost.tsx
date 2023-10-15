@@ -1,32 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Input } from './Input';
 import { FormEvent, useState } from 'react';
-import { api } from 'src/lib/axios';
-import { Post, Status } from 'src/types';
-import { AxiosError } from 'axios';
+import { usePost } from 'src/hooks/usePost';
 
 export function SearchPost() {
   const [search, setSearch] = useState('');
-  const [post, setPost] = useState({} as Post);
-  const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<Status>('loading');
+  const { post, status, error, refetch } = usePost(search);
 
   const handleSearchPost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    try {
-      setPost({} as Post);
-      setStatus('loading');
-      const { data } = await api.get(`/posts/${search}`);
-      setPost(data);
-      setError(null);
-      setStatus('success');
-    } catch (err) {
-      const error = err as AxiosError;
-      const customError = error.response?.data as { message: string };
-      setError(customError.message || error.message);
-      setStatus('error');
-    }
+    refetch();
   };
 
   return (

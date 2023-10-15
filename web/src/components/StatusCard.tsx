@@ -2,30 +2,12 @@ import externalLinkIcon from '../assets/external-link.svg';
 import userGroupIcon from '../assets/user-group.svg';
 import githubIcon from '../assets/github.svg';
 import buildingIcon from '../assets/building.svg';
-import { useEffect, useState } from 'react';
-import { PostData, Status } from 'src/types';
-import { api } from 'src/lib/axios';
 import { SearchPost } from './SearchPost';
 import { Link } from 'react-router-dom';
+import { usePosts } from 'src/hooks/usePosts';
 
 export function StatusCard() {
-  const [posts, setPosts] = useState<PostData[]>([]);
-  const [status, setStatus] = useState<Status>('loading');
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setStatus('loading');
-        const { data } = await api.get<PostData[]>('/posts');
-        setPosts(data);
-        setStatus('success');
-      } catch (err) {
-        setStatus('error');
-      }
-    };
-
-    fetchPosts();
-  }, []);
+  const { posts, status } = usePosts();
 
   return (
     <section className="py-8 px-10 bg-base-profile rounded-[10px] shadow-customShadow flex flex-col gap-8">
