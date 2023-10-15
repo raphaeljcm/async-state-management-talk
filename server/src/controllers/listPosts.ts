@@ -15,10 +15,7 @@ export async function listPosts(req: Request, res: Response) {
       const end = start + Number(pageSize);
       const page = posts.slice(start, end);
 
-      return res.json({
-        items: page,
-        nextPageOffset: posts.length > end ? Number(pageOffset) + 1 : undefined,
-      });
+      return res.json(page);
     }
 
     res.json(posts);

@@ -17,7 +17,6 @@ export function useUpdatePost() {
   return useMutation(updatePost, {
     onSuccess: (data, variables) => {
       const { id } = variables;
-      console.log(id);
 
       queryClient.invalidateQueries(['posts'], { exact: true });
       queryClient.invalidateQueries(['posts', id]);

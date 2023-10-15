@@ -1,12 +1,22 @@
 import { Card } from '@/Card';
 import { useQueryClient } from '@tanstack/react-query';
+import { Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { APP_ROUTES } from 'src/constants';
-import { usePosts } from 'src/hooks/usePosts';
+import { useInfinitePosts } from 'src/hooks/useInfinitePosts';
 import { fetchPost } from 'src/services/fetchPost';
 
 export function Home() {
-  const { data, isLoading, isFetching, isError, error } = usePosts();
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    isError,
+    error,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfinitePosts();
   const queryClient = useQueryClient();
 
   const navigate = useNavigate();
@@ -21,7 +31,7 @@ export function Home() {
     <section className="flex flex-col gap-8 mt-16">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-base-subtitle">
-          Publicações {isFetching && '...'}
+          Publicações {isFetching && !isFetchingNextPage && '...'}
         </h2>
         <Link
           to={APP_ROUTES.CREATE_POST}
@@ -38,18 +48,33 @@ export function Home() {
           <span className="text-base-subtitle">Error: {error.message}</span>
         ) : (
           <>
-            {data.map(post => (
-              <Card
-                key={post.id}
-                title={post.title}
-                description={post.description}
-                onClick={() => handleCardClick(post.id)}
-                onMouseEnter={() => handleMouseEnter(post.id)}
-              />
+            {data.pages.map((page, index) => (
+              <Fragment key={index}>
+                {page.map(post => (
+                  <Card
+                    key={post.id}
+                    title={post.title}
+                    description={post.description}
+                    onClick={() => handleCardClick(post.id)}
+                    onMouseEnter={() => handleMouseEnter(post.id)}
+                  />
+                ))}
+              </Fragment>
             ))}
           </>
         )}
       </div>
+      <button
+        onClick={() => fetchNextPage()}
+        disabled={!hasNextPage}
+        className="py-2 px-4 bg-base-input text-base-span w-fit mx-auto rounded-lg outline-none focus-visible:ring-1 focus-visible:ring-blue hover:brightness-75 transition-colors"
+      >
+        {isFetchingNextPage
+          ? 'Carregando mais posts...'
+          : hasNextPage
+          ? 'Carregar mais'
+          : 'Não há mais posts'}
+      </button>
     </section>
   );
 }
