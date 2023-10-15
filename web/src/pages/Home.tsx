@@ -4,7 +4,7 @@ import { APP_ROUTES } from 'src/constants';
 import { usePosts } from 'src/hooks/usePosts';
 
 export function Home() {
-  const { posts, status, error } = usePosts();
+  const { data, isLoading, isFetching, isError, error } = usePosts();
 
   const navigate = useNavigate();
 
@@ -13,7 +13,9 @@ export function Home() {
   return (
     <section className="flex flex-col gap-8 mt-16">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-base-subtitle">Publicações</h2>
+        <h2 className="text-lg font-bold text-base-subtitle">
+          Publicações {isFetching && '...'}
+        </h2>
         <Link
           to={APP_ROUTES.CREATE_POST}
           className="text-lg font-bold text-base-title"
@@ -23,13 +25,13 @@ export function Home() {
       </div>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(0,48%))] gap-8 h-[900px] overflow-auto py-4 px-2">
-        {status === 'loading' ? (
+        {isLoading ? (
           <span className="text-base-subtitle">Loading...</span>
-        ) : status === 'error' ? (
-          <span className="text-base-subtitle">Error: {error}</span>
+        ) : isError ? (
+          <span className="text-base-subtitle">Error: {error.message}</span>
         ) : (
           <>
-            {posts.map(post => (
+            {data.map(post => (
               <Card
                 key={post.id}
                 title={post.title}

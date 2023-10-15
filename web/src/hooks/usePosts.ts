@@ -1,17 +1,17 @@
-import { useContext, useEffect } from 'react';
-import { PostsContext } from 'src/contexts/PostsContext';
+import {
+  QueryFunctionContext,
+  UseQueryResult,
+  useQuery,
+} from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { api } from 'src/lib/axios';
+import { PostData } from 'src/types';
 
-export const usePosts = () => {
-  const { posts, status, error, refetch } = useContext(PostsContext);
+async function fetchPosts({ signal }: QueryFunctionContext) {
+  const { data } = await api.get<PostData[]>('/posts', { signal });
+  return data;
+}
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  return {
-    posts,
-    status,
-    error,
-    refetch,
-  };
+export const usePosts = (): UseQueryResult<PostData[], AxiosError> => {
+  return useQuery(['posts'], fetchPosts);
 };

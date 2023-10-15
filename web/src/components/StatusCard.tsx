@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { usePosts } from 'src/hooks/usePosts';
 
 export function StatusCard() {
-  const { posts, status } = usePosts();
+  const { data, isLoading } = usePosts();
 
   return (
     <section className="py-8 px-10 bg-base-profile rounded-[10px] shadow-customShadow flex flex-col gap-8">
@@ -61,7 +61,7 @@ export function StatusCard() {
                 height={18}
               />
               <span className="text-base-subtitle">{`${
-                status === 'loading' ? '...' : posts.length + ' publicações'
+                isLoading ? '...' : data?.length + ' publicações'
               }`}</span>
             </div>
             <Link

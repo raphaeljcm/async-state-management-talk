@@ -5,36 +5,34 @@ import { usePost } from 'src/hooks/usePost';
 
 export function SearchPost() {
   const [search, setSearch] = useState('');
-  const { post, status, error, refetch } = usePost(search);
+  const { data, isLoading, isError, error } = usePost(search);
 
   const handleSearchPost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    refetch();
+
+    new FormData(event.currentTarget).forEach(value =>
+      setSearch(value.toString()),
+    );
   };
 
   return (
     <form onSubmit={e => handleSearchPost(e)} className="flex flex-col gap-2">
-      <Input
-        type="search"
-        placeholder="Buscar post por id"
-        value={search}
-        onChange={e => setSearch(e.currentTarget.value)}
-      />
+      <Input type="search" name="search" placeholder="Buscar post por id" />
 
       {search && (
         <div>
-          {status === 'loading' ? (
+          {isLoading ? (
             <span className="text-base-subtitle">Loading...</span>
-          ) : status === 'error' ? (
-            <span className="text-base-subtitle">Error: {error}</span>
+          ) : isError ? (
+            <span className="text-base-subtitle">Error: {error.message}</span>
           ) : (
             <p className="text-base-subtitle">
               Post encontrado:{' '}
               <Link
-                to={`/posts/${post.id}`}
+                to={`/posts/${data.id}`}
                 className="underline hover:brightness-75 transition-colors"
               >
-                {post.title}
+                {data.title}
               </Link>
             </p>
           )}
