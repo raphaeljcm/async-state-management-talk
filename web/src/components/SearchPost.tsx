@@ -24,7 +24,9 @@ export function SearchPost() {
           {isLoading ? (
             <span className="text-base-subtitle">Loading...</span>
           ) : isError ? (
-            <span className="text-base-subtitle">Error: {error.message}</span>
+            <span className="text-base-subtitle">
+              Error: {error.response?.data.message || error.message}
+            </span>
           ) : (
             <p className="text-base-subtitle">
               Post encontrado:{' '}

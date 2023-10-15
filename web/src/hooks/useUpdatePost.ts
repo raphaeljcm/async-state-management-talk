@@ -1,32 +1,30 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from 'src/lib/axios';
-import { MutationStatus, UpdatePostPayload } from 'src/types';
+import { UpdatePostPayload } from 'src/types';
 
-export function useUpdatePost(): [
-  (values: UpdatePostPayload) => Promise<void>,
-  MutationStatus,
-] {
-  const [status, setStatus] = useState<MutationStatus>('idle');
+async function updatePost(values: UpdatePostPayload) {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
 
-  const updatePost = useCallback(async (values: UpdatePostPayload) => {
-    const data = {
-      title: values.title,
-      description: values.description,
-    };
-    try {
-      setStatus('loading');
-      await api.patch(`/posts/${values.id}`, data);
-      setStatus('success');
+  await api.patch(`/posts/${values.id}`, values, { signal });
+}
+
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation(updatePost, {
+    onSuccess: (data, variables) => {
+      const { id } = variables;
+      console.log(id);
+
+      queryClient.invalidateQueries(['posts'], { exact: true });
+      queryClient.invalidateQueries(['posts', id]);
       toast.success('Post atualizado com sucesso!');
-    } catch (err) {
-      setStatus('error');
-      const error = err as AxiosError;
-      setStatus('error');
-      toast.error(error.message);
-    }
-  }, []);
-
-  return [updatePost, status];
+    },
+    onError: (err: AxiosError) => {
+      toast.error(err.message);
+    },
+  });
 }

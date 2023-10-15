@@ -15,12 +15,12 @@ import { useDeletePost } from 'src/hooks/useDeletePost';
 export default function Post() {
   const { id } = useParams();
   const { data, isLoading, isError, error } = usePost(id);
-  const [deletePost, mutationStatus] = useDeletePost();
+  const deletePostMutation = useDeletePost();
 
   const handleDeletePost = async () => {
     if (!id) return;
 
-    await deletePost(id);
+    deletePostMutation.mutate(id);
   };
 
   return (
@@ -67,11 +67,11 @@ export default function Post() {
                         onClick={handleDeletePost}
                         className="py-2 px-4 bg-base-post text-base-span w-fit rounded-lg outline-none focus-visible:ring-1 focus-visible:ring-blue hover:brightness-75 transition-colors"
                       >
-                        {mutationStatus === 'loading'
+                        {deletePostMutation.status === 'loading'
                           ? 'Deletando post...'
-                          : mutationStatus === 'error'
+                          : deletePostMutation.status === 'error'
                           ? 'Erro!'
-                          : mutationStatus === 'success'
+                          : deletePostMutation.status === 'success'
                           ? 'Post deletado!'
                           : 'Deletar post'}
                       </button>

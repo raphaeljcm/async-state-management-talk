@@ -1,27 +1,27 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from 'src/lib/axios';
-import { CreatePostPayload, MutationStatus } from 'src/types';
+import { CreatePostPayload } from 'src/types';
 
-export function useCreatePost(): [
-  (values: CreatePostPayload) => Promise<void>,
-  MutationStatus,
-] {
-  const [status, setStatus] = useState<MutationStatus>('idle');
+async function createPost(values: CreatePostPayload) {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
 
-  const createPost = useCallback(async (values: CreatePostPayload) => {
-    try {
-      setStatus('loading');
-      await api.post(`/posts`, values);
-      setStatus('success');
+  const { data } = await api.post('/posts', values, { signal });
+  return data;
+}
+
+export function useCreatePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation(createPost, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['posts']);
       toast.success('Post criado com sucesso!');
-    } catch (err) {
-      const error = err as AxiosError;
-      setStatus('error');
-      toast.error(error.message);
-    }
-  }, []);
-
-  return [createPost, status];
+    },
+    onError: (err: AxiosError) => {
+      toast.error(err.message);
+    },
+  });
 }
