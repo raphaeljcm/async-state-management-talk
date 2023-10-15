@@ -1,14 +1,21 @@
 import { Card } from '@/Card';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { APP_ROUTES } from 'src/constants';
 import { usePosts } from 'src/hooks/usePosts';
+import { fetchPost } from 'src/services/fetchPost';
 
 export function Home() {
   const { data, isLoading, isFetching, isError, error } = usePosts();
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
 
   const handleCardClick = (id: string) => navigate(`/posts/${id}`);
+
+  const handleMouseEnter = (id: string) => {
+    queryClient.prefetchQuery(['posts', id], fetchPost);
+  };
 
   return (
     <section className="flex flex-col gap-8 mt-16">
@@ -37,6 +44,7 @@ export function Home() {
                 title={post.title}
                 description={post.description}
                 onClick={() => handleCardClick(post.id)}
+                onMouseEnter={() => handleMouseEnter(post.id)}
               />
             ))}
           </>
