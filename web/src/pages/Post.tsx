@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -17,15 +17,10 @@ export default function Post() {
   const { post, status, error } = usePost(id);
   const [deletePost, mutationStatus] = useDeletePost();
 
-  const navigate = useNavigate();
-
-  const handleGoBack = () => navigate(-1);
-
   const handleDeletePost = async () => {
     if (!id) return;
 
     await deletePost(id);
-    handleGoBack();
   };
 
   return (
