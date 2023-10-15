@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { api } from 'src/lib/axios';
-import { CreatePostPayload } from 'src/types';
+import { CreatePostPayload, PostData } from 'src/types';
 
 async function createPost(values: CreatePostPayload) {
   const abortController = new AbortController();
@@ -16,12 +16,23 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation(createPost, {
+    onMutate: variables => {
+      const previousPosts = queryClient.getQueryData(['posts']);
+
+      queryClient.setQueryData<PostData[]>(
+        ['posts'],
+        prev => prev && [...prev, { ...variables, id: 'temp' }],
+      );
+
+      return () => queryClient.setQueryData(['posts'], previousPosts);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['posts']);
       toast.success('Post criado com sucesso!');
     },
-    onError: (err: AxiosError) => {
+    onError: (err: AxiosError, variables, rollback) => {
       toast.error(err.message);
+      rollback!();
     },
   });
 }
