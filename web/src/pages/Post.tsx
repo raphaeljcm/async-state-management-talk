@@ -1,9 +1,4 @@
-import arrowIcon from '../assets/arrow.svg';
-import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { MutationStatus, PostData, Status } from 'src/types';
-import { api } from 'src/lib/axios';
-import { AxiosError } from 'axios';
 import {
   Dialog,
   DialogContent,
@@ -13,48 +8,25 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/Dialog';
+import { GoBackButton } from '@/GoBackButton';
+import { usePost } from 'src/hooks/usePost';
+import { useDeletePost } from 'src/hooks/useDeletePost';
 
 export default function Post() {
-  const [post, setPost] = useState({} as PostData);
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState<Status>('loading');
-  const [mutationStatus, setMutationStatus] = useState<MutationStatus>('idle');
-
   const { id } = useParams();
+  const { post, status, error } = usePost(id);
+  const [deletePost, mutationStatus] = useDeletePost();
+
   const navigate = useNavigate();
 
   const handleGoBack = () => navigate(-1);
 
   const handleDeletePost = async () => {
-    try {
-      setMutationStatus('loading');
-      await api.delete(`/posts/${id}`);
-      setMutationStatus('success');
-      handleGoBack();
-    } catch (err) {
-      setMutationStatus('error');
-    }
+    if (!id) return;
+
+    await deletePost(id);
+    handleGoBack();
   };
-
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        setStatus('loading');
-
-        const { data } = await api.get<PostData>(`/posts/${id}`);
-
-        setPost(data);
-        setError('');
-        setStatus('success');
-      } catch (err) {
-        const error = err as AxiosError;
-        setError(error.message);
-        setStatus('error');
-      }
-    }
-
-    fetchPost();
-  }, [id]);
 
   return (
     <>
@@ -69,19 +41,7 @@ export default function Post() {
               <h2 className="text-2xl font-bold text-base-title">
                 {post.title}
               </h2>
-              <button
-                type="button"
-                className="text-xs text-blue font-bold uppercase flex gap-2 hover:brightness-75 transition-colors"
-                onClick={handleGoBack}
-              >
-                <img
-                  src={arrowIcon}
-                  alt="click here to go back"
-                  width={12}
-                  height={12}
-                />{' '}
-                voltar
-              </button>
+              <GoBackButton />
             </div>
 
             <p className="text-base-text">{post.description}</p>
